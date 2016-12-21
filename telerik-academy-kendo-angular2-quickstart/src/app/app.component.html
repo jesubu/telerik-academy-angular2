@@ -1,0 +1,21 @@
+<kendo-grid
+          [data]="view | async"
+          [pageSize]="pageSize"
+          [skip]="skip"
+          [pageable]="true"
+          [sortable]="{ mode: 'multiple' }"
+          [sort]="sort"
+        >
+        <kendo-grid-toolbar>
+          <button kendoButton (click)="addProduct()">Add new</button>
+        </kendo-grid-toolbar>
+        <kendo-grid-column field="ProductID" width="100"></kendo-grid-column>
+        <kendo-grid-column field="ProductName" width="200">
+          <template kendoCellTemplate let-dataItem let-rowIndex="rowIndex">
+              Row: {{rowIndex}} / {{dataItem.ProductName}}
+              {{dataItem.Discontinued ? 'inactive' : 'active'}}
+          </template>
+        </kendo-grid-column>
+        <kendo-grid-column field="Description">
+        </kendo-grid-column>
+      </kendo-grid>
