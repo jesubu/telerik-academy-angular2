@@ -11,21 +11,20 @@ import { toODataString, SortDescriptor } from '@progress/kendo-data-query';
 
 @Injectable()
 export class CategoryService extends BehaviorSubject<GridDataResult> {
-  private BASE_URL: string = 'http://services.odata.org/V4/Northwind/Northwind.svc/';
-  private tableName: string = "Products";
+  private BASE_URL: string = 'http://services.odata.org/V4/Northwind/Northwind.svc/Products';
 
   constructor(private http: Http) {
     super(null);
   }
 
   public query(state): void {
-    this.fetch(this.tableName, state).subscribe(x => super.next(x));
+    this.fetch(state).subscribe(x => super.next(x));
   }
 
-  private fetch(tableName: string, state: any): Observable<GridDataResult> {
+  private fetch(state: any): Observable<GridDataResult> {
       const queryStr = `${toODataString(state)}&$count=true`;
       return this.http
-          .get(`${this.BASE_URL}${tableName}?${queryStr}`)
+          .get(`${this.BASE_URL}?${queryStr}`)
           .map(response => response.json())
           .map(response => (<GridDataResult>{
               data: response.value,
@@ -47,9 +46,9 @@ export class AppComponent {
     private sort: SortDescriptor[] = [];
 
     @ViewChild(GridComponent) private grid: GridComponent;
+
     constructor(private service: CategoryService) {
         this.view = service;
-
         this.service.query({ skip: this.skip, take: this.pageSize, sort: this.sort });
     }
 
@@ -63,7 +62,9 @@ export class AppComponent {
             .subscribe(x => this.service.query(x));
     }
 
-    public addProduct() {
-
+    public getTotalUnits() {
+      if (this.grid.data) {
+        return this.grid.data['data'].reduce((result, current) => result += current.UnitsInStock, 0);
+      }
     }
 }

@@ -1,3 +1,4 @@
+<form-component></form-component>
 <kendo-grid
           [data]="view | async"
           [pageSize]="pageSize"
@@ -6,9 +7,6 @@
           [sortable]="{ mode: 'multiple' }"
           [sort]="sort"
         >
-        <kendo-grid-toolbar>
-          <button kendoButton (click)="addProduct()">Add new</button>
-        </kendo-grid-toolbar>
         <kendo-grid-column field="ProductID" width="100"></kendo-grid-column>
         <kendo-grid-column field="ProductName" width="200">
           <template kendoCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -16,6 +14,19 @@
               {{dataItem.Discontinued ? 'inactive' : 'active'}}
           </template>
         </kendo-grid-column>
-        <kendo-grid-column field="Description">
+        <kendo-grid-column field="UnitsInStock">
+            <template kendoFooterTemplate let-column>
+                {{getTotalUnits()}}
+                {{column.field}}
+            </template>
         </kendo-grid-column>
+        <template kendoDetailTemplate let-dataItem>
+          <section *ngIf="!dataItem.Discontinued">
+            <header>Qty: {{dataItem.QuantityPerUnit}}</header>
+            <article>Price: {{dataItem.UnitPrice}} &pound;</article>
+          </section>
+          <section *ngIf="dataItem.Discontinued">
+              <h4>Item is Discontinued!</h4>
+          </section>
+        </template>
       </kendo-grid>
