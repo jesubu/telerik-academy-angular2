@@ -1,10 +1,10 @@
 import { Component, Injectable, ViewChild , forwardRef, Directive, Attribute} from '@angular/core';
 import { FormGroup, FormControl, Validator, Validators, NG_VALIDATORS } from '@angular/forms';
 
-const RequiredValidatorLogic = (required) => (control) => {
-    return control.value && control.value.id && control.value.id !== null ? null : {
-        valid: false
-    }
+const requiredValidatorLogic = (required) => (control) => {
+    if (!control.value) return { valid: false }
+    return control.value.id && control.value.id !== null ? 
+        null : { valid: false };
  };
 const Required_VALIDATOR: any = {
    provide: NG_VALIDATORS,
@@ -19,7 +19,7 @@ const Required_VALIDATOR: any = {
 export class RequiredValidator implements Validator {
     private _validator: any;
     constructor(@Attribute('isRequired') required: boolean) {
-        this._validator = RequiredValidatorLogic(required);
+        this._validator = requiredValidatorLogic(required);
     }
     validate(c) {
         return this._validator(c);
@@ -34,23 +34,24 @@ export class RequiredValidator implements Validator {
             Thanks, {{simpleForm.controls.name.value}}!
         </div>
         <form [formGroup]="simpleForm" style="height: 200px" *ngIf="!submitted" (ngSubmit)="submit(simpleForm)">
-        <kendo-dropdownlist
-            isRequired="true"
-            formControlName="occupationDDL"
-            [(ngModel)]="occupation"
-            [defaultItem]="defaultItem"
-            [data]="data"
-            [valueField]="'id'"
-            [textField]="'occupation'"
-        ></kendo-dropdownlist>
-        <br />
-        <input class='k-input' formControlName="name" />
-        <span style="color: red" 
-            *ngIf="simpleForm.controls.name.invalid && !simpleForm.controls.name.pristine">
-        Name is required to be at least 2 characters!</span>
-        <br />
-        <h4>Form is valid? {{simpleForm.valid}}</h4>
-        <button [disabled]="simpleForm.invalid" type="submit">Submit</button>
+            <kendo-dropdownlist
+                isRequired="true"
+                formControlName="occupationDDL"
+                [(ngModel)]="occupation"
+                [defaultItem]="defaultItem"
+                [data]="data"
+                [valueField]="'id'"
+                [textField]="'occupation'"
+            ></kendo-dropdownlist>
+            <br />
+            <input class='k-input' formControlName="name" />
+            <span style="color: red" 
+                *ngIf="simpleForm.controls.name.invalid && !simpleForm.controls.name.pristine">
+                Name is required to be at least 2 characters!
+            </span>
+            <br />
+            <h4>Form is valid? {{simpleForm.valid}}</h4>
+            <button [disabled]="simpleForm.invalid" type="submit">Submit</button>
         </form>
   `
 })
@@ -74,7 +75,7 @@ export class FormComponent {
 
     constructor() {
         this.simpleForm = new FormGroup({
-            'occupationDDL': new FormControl({}, RequiredValidatorLogic),
+            'occupationDDL': new FormControl({}, requiredValidatorLogic),
             'name': new FormControl("", Validators.compose([Validators.required, Validators.minLength(2)]))
         })
     }

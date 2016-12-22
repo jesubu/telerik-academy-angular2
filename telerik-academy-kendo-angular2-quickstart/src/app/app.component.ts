@@ -1,4 +1,4 @@
-import { Component, Injectable, ViewChild } from '@angular/core';
+import { Component, Injectable, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 import {
@@ -37,6 +37,7 @@ export class CategoryService extends BehaviorSubject<GridDataResult> {
   providers: [CategoryService],
   selector: 'app-root',
   templateUrl: './app.component.html',
+  encapsulation: ViewEncapsulation.None,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
@@ -62,7 +63,7 @@ export class AppComponent {
             .subscribe(x => this.service.query(x));
     }
 
-    public getTotalUnits() {
+    public get totalUnits() {
       if (this.grid.data) {
         return this.grid.data['data'].reduce((result, current) => result += current.UnitsInStock, 0);
       }
